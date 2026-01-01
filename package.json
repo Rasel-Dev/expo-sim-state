@@ -1,7 +1,7 @@
 {
   "name": "expo-sim-state",
   "version": "0.1.0",
-  "description": "My new module",
+  "description": "Expo / React Native Android module for structured SIM card info with automatic permissions and DX-friendly API.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
