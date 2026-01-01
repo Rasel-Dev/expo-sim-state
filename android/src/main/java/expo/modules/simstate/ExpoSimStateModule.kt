@@ -1,50 +1,69 @@
 package expo.modules.simstate
 
+import android.content.Context
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.net.URL
 
+/**
+ * Native module exposing Android SIM state to React Native / Expo.
+ *
+ * This module provides a single async function `getSimState` which fetches
+ * the complete SIM state of the device using [SimStateProvider].
+ *
+ * Features:
+ * - Returns structured SIM information including subscription ID, slot, carrier, country, phone number, and readiness
+ * - Only works on Android
+ * - Permissions should be handled on the JS side for a DX-friendly experience
+ *
+ * Example usage in TypeScript:
+ * ```ts
+ * import { getSimState } from 'expo-sim-state';
+ *
+ * try {
+ *   const simState = await getSimState();
+ *   console.log(simState.simCards);
+ * } catch (err) {
+ *   console.error(err);
+ * }
+ * ```
+ */
 class ExpoSimStateModule : Module() {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
-  override fun definition() = ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ExpoSimState')` in JavaScript.
-    Name("ExpoSimState")
 
-    // Defines constant property on the module.
-    Constant("PI") {
-      Math.PI
+    /**
+     * Defines the module name and exposed functions to React Native.
+     *
+     * Exports:
+     * - `getSimState`: Async function that returns a [SimStateResult] object
+     */
+    override fun definition() = ModuleDefinition {
+
+        // Name of the module as exposed to JS
+        Name("ExpoSimState")
+
+        /**
+         * Asynchronously fetches the current SIM state of the device.
+         *
+         * Internally uses [SimStateProvider] to retrieve:
+         * - Total SIM slots
+         * - Number of active SIMs
+         * - Array of [SimCardInfo] objects
+         *
+         * Notes:
+         * - Requires READ_PHONE_STATE / READ_PHONE_NUMBERS permissions.
+         * - Should be called from JS only on Android.
+         *
+         * @return [SimStateResult] containing all SIM information
+         */
+        AsyncFunction("getSimState") { ->
+
+            // Retrieve the current Android application context
+            val appContext: Context = requireNotNull(appContext.reactContext)
+
+            // Instantiate provider to fetch SIM state
+            val provider = SimStateProvider(appContext)
+
+            // Return the structured SIM state
+            return@AsyncFunction provider.getSimState()
+        }
     }
-
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      "Hello world! 👋"
-    }
-
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { value: String ->
-      // Send an event to JavaScript.
-      sendEvent("onChange", mapOf(
-        "value" to value
-      ))
-    }
-
-    // Enables the module to be used as a native view. Definition components that are accepted as part of
-    // the view definition: Prop, Events.
-    View(ExpoSimStateView::class) {
-      // Defines a setter for the `url` prop.
-      Prop("url") { view: ExpoSimStateView, url: URL ->
-        view.webView.loadUrl(url.toString())
-      }
-      // Defines an event that the view can send to JavaScript.
-      Events("onLoad")
-    }
-  }
 }

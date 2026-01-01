@@ -1,9 +1,15 @@
 {
-  "platforms": ["apple", "android", "web"],
+  "platforms": [
+    "android"
+  ],
   "apple": {
-    "modules": ["ExpoSimStateModule"]
+    "modules": [
+      "ExpoSimStateModule"
+    ]
   },
   "android": {
-    "modules": ["expo.modules.simstate.ExpoSimStateModule"]
+    "modules": [
+      "expo.modules.simstate.ExpoSimStateModule"
+    ]
   }
 }

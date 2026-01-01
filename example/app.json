@@ -23,7 +23,12 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "expo.modules.simstate.example"
+      "package": "expo.modules.simstate.example",
+      "permissions": [
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.READ_PHONE_NUMBERS"
+        // "android.permission.READ_SMS",
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
